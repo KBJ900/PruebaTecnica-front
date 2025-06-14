@@ -62,7 +62,12 @@ export default function MoviesCrudRedux() {
   }, [error, toast, dispatch])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    if (!formData.directorId || formData.directorId === 0) {
+      alert('Por favor selecciona un director.');
+      return;
+    }
     try {
       if (editingMovie) {
         await dispatch(updateMovie({ ...formData, moviesId: editingMovie.moviesId })).unwrap()
@@ -96,16 +101,20 @@ export default function MoviesCrudRedux() {
   }
 
   const openEditDialog = (movie: Movie) => {
+    const releaseDate = new Date(movie.releaseYear)
+    const formattedDate = releaseDate.toISOString().split("T")[0] // => YYYY-MM-DD
+  
     setEditingMovie(movie)
     setFormData({
       name: movie.name,
-      releaseYear: movie.releaseYear,
+      releaseYear: formattedDate,
       gender: movie.gender,
       duration: movie.duration,
       directorId: movie.directorId,
     })
     setIsDialogOpen(true)
   }
+  
 
   const handleSearchChange = (value: string) => {
     dispatch(setSearchTerm(value))
